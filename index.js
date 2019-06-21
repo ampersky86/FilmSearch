@@ -15,35 +15,44 @@ function apiSearch(event) {
 
 const sendRequest = function (method, url) {
     let request = new XMLHttpRequest();
-    //console.log(request);
     request.open(method, url);
     request.send();
 
  request.addEventListener('readystatechange', () => {
-     let inner='';
-     let img_url = 'https://image.tmdb.org/t/p/w1280';
+     let inner='',
+      img_url = 'https://image.tmdb.org/t/p/w1280',
+      response = request.responseText,
+      output =JSON.parse(response);
 
-     if(request.readyState !==4) return 'Loading';
+     if(request.readyState !==4)
+         return 'Loading';
      if (request.readyState !== 200) {
          movie.innerHTML = `Ошибка${request.status}`}
 
-         let response = request.responseText;
-         let output = JSON.parse(response);
-         console.log(output.results);
+
+         console.log(output);
 
          output.results.forEach((item)=>{
             let nameItem=item.name||item.title,
                 imgPoster = item.backdrop_path ? (`${img_url}${item.backdrop_path}`):(`${img_url}${item.poster_path}`),
-                release = item.release_date;
-            inner+=`<div class="col-12">${nameItem}
-                           <div>Дата релиза: ${release}</div>
-                          <img src="${imgPoster}" alt=""/>
-                     <div/>`;
+                overview = item.overview;
+             inner+=`<div class="row">
+                        <div class="card" style="width:18rem;">
+                            <img class="card-img-top" src="${imgPoster}" alt="Card image cap">
+                            <div class="card-body">
+                                <h5 class="card-title">${nameItem}</h5>
+                                <p class="card-text">${overview}</p>
+                                <a href="#" class="btn btn-primary">Подробнее</a>
+                            </div>
+                        </div>    
+                    </div>`;
             movie.innerHTML=inner;
         })
      }
  )
 
 };
+
+
 
 

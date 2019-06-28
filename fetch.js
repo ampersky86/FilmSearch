@@ -1,9 +1,18 @@
 const searchForm = document.querySelector('#search-form');
 const movie = document.querySelector('#movies');
 
-
 searchForm.addEventListener('submit', apiSearch);
 
+function showFullInfo() {
+    console.log('info')
+}
+function addEventMedia () {
+    const media = document.querySelectorAll("img[data-id]");
+    media.forEach(item => {
+        item.style.cursor = 'pointer';
+        item.addEventListener('click', showFullInfo);
+    });
+}
 function apiSearch(event) {
     event.preventDefault();
     const searchText = document.querySelector('.form-control').value;
@@ -24,7 +33,6 @@ function apiSearch(event) {
         .then(function (output) {
             let inner = '';
             let img_url = 'https://image.tmdb.org/t/p/w500';
-            console.log(output.results.length);
             if (output.results.length === 0){
                 inner = '<h2 class="col-12 text-center text-info">По вашему запросу ничего не найдено</h2>';
             }
@@ -32,18 +40,20 @@ function apiSearch(event) {
                 let nameItem = item.name||item.title;
                 let poster = item.poster_path ? (`${img_url}${item.poster_path}`):'./img/not_poster.jpg';
                 let overview = item.overview;
-                inner+=`<div class="row">
-                        <div class="card" style="width:18rem;">
-                            <img class="card-img-top" src="${poster}" alt="${nameItem}">
+                let dataInfo = '';
+                if ( item.media_type !== 'person') dataInfo = `data-id="${item.id}" data-type="${item.media_type}"`;
+                inner+=`<div class="card col-12 col-md-6 col-xl-3" style="padding: 0; margin: 10px">
+                            <img class="card-img-top" src="${poster}" alt="${nameItem}" ${dataInfo}>
                             <div class="card-body">
                                 <h5 class="card-title">${nameItem}</h5>
                                 <p class="card-text">${overview}</p>
                                 <a href="#" class="btn btn-primary">Подробнее</a>
                             </div>
-                        </div>    
-                    </div>`;
+                        </div>`
+
             });
             movie.innerHTML=inner;
+            addEventMedia();
         })
         .catch(function (reason) {
             console.log(`Ошибка - ${reason}`);
